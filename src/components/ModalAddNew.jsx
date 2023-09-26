@@ -30,7 +30,12 @@ function ModalAddNew(props) {
       className="modal show"
       style={{ display: "block", position: "initial", color: "black" }}
     >
-      <Modal show={isShowModalAddNew} onHide={handleClose}>
+      <Modal
+        show={isShowModalAddNew}
+        onHide={handleClose}
+        backdrop="static"
+        keyboard={false}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Add new user</Modal.Title>
         </Modal.Header>

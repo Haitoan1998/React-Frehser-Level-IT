@@ -5,13 +5,29 @@ import ModalAddNew from "./ModalAddNew";
 import ReactPaginate from "react-paginate";
 import ModalEditUsers from "./ModalEditUsers";
 import _ from "lodash";
+import { debounce } from "lodash";
+import ModalConfirm from "./ModalConfirm";
 
 const TableUsers = ({ setIsShowModalAddNew, isShowModalAddNew }) => {
   const [listUsers, setListUsers] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [isShowModalEdit, setIsShowModalEdit] = useState(false);
+  const [isShowModalDelete, setIsShowModalDelete] = useState(false);
   const [dataUserEdit, setDataUserEdit] = useState({});
+  const [dataUserDelete, setDataUserDelete] = useState({});
+
+  const [sortBy, setSortBy] = useState("asc");
+  const [sortField, setSortField] = useState("id");
+
+  const handleSort = (sortBy, sortField) => {
+    setSortBy(sortBy);
+    setSortField(sortField);
+    let clone = _.cloneDeep(listUsers);
+    clone = _.orderBy(clone, [sortField], [sortBy]);
+    console.log(clone);
+    setListUsers(clone);
+  };
 
   //ComponentDidMount Call API
   useEffect(() => {
@@ -52,18 +68,91 @@ const TableUsers = ({ setIsShowModalAddNew, isShowModalAddNew }) => {
     setListUsers(newUpdate);
   };
 
+  const handelDeleteUserFromModal = (user) => {
+    const clone = _.cloneDeep(listUsers);
+
+    const newUpdate = clone.filter((item, i) => {
+      return item.id !== user.id;
+    });
+
+    setListUsers(newUpdate);
+  };
+
   const handeEditUset = (user) => {
     setDataUserEdit(user);
     setIsShowModalEdit(!isShowModalAddNew);
   };
+
+  const handleDelete = (user) => {
+    setIsShowModalDelete(!isShowModalDelete);
+    setDataUserDelete(user);
+  };
+
+  const HandleSearch = debounce((event) => {
+    const term = event.target.value;
+    console.log(1);
+    if (term) {
+      let cloneListUsers = _.cloneDeep(listUsers);
+      cloneListUsers = cloneListUsers.filter((item) =>
+        item.email.includes(term)
+      );
+      setListUsers(cloneListUsers);
+    } else {
+      getAllUsers(currentPage);
+    }
+  }, 500);
   return (
     <>
+      <div className="col-6 my-3">
+        <input
+          placeholder="Search by email..."
+          onChange={(event) => {
+            HandleSearch(event);
+          }}
+        />
+      </div>
       <Table striped bordered hover variant="dark">
         <thead>
           <tr>
-            <th>ID</th>
+            <th>
+              <div className="d-flex justify-content-around sort-header">
+                <span>ID</span>
+                <span>
+                  <i
+                    className="fa-solid fa-arrow-down-long"
+                    onClick={() => {
+                      handleSort("desc", "id");
+                    }}
+                  ></i>{" "}
+                  <i
+                    className="fa-solid fa-arrow-up-long"
+                    onClick={() => {
+                      handleSort("asc", "id");
+                    }}
+                  ></i>
+                </span>
+              </div>
+            </th>
             <th>Email</th>
-            <th>First Name</th>
+            <th>
+              <div className="d-flex justify-content-around sort-header">
+                <span>First Name</span>
+                <span>
+                  <i
+                    class="fa-solid fa-arrow-down-long"
+                    onClick={() => {
+                      handleSort("desc", "first_name");
+                    }}
+                  ></i>{" "}
+                  <i
+                    class="fa-solid fa-arrow-up-long"
+                    onClick={() => {
+                      handleSort("asc", "first_name");
+                    }}
+                  ></i>
+                </span>
+              </div>
+            </th>
             <th>Last Name</th>
             <th>Actions</th>
           </tr>
@@ -87,7 +176,14 @@ const TableUsers = ({ setIsShowModalAddNew, isShowModalAddNew }) => {
                     >
                       Edit
                     </button>
-                    <button className="btn btn-danger">Delete</button>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => {
+                        handleDelete(item);
+                      }}
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               );
@@ -128,6 +224,14 @@ const TableUsers = ({ setIsShowModalAddNew, isShowModalAddNew }) => {
         }}
         handelEditUserFromModal={handelEditUserFromModal}
         dataUserEdit={dataUserEdit}
+      />
+      <ModalConfirm
+        isShowModalDelete={isShowModalDelete}
+        handleClose={() => {
+          setIsShowModalDelete(!isShowModalDelete);
+        }}
+        dataUserDelete={dataUserDelete}
+        handelDeleteUserFromModal={handelDeleteUserFromModal}
       />
     </>
   );

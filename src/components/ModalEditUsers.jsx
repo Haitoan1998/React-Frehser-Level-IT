@@ -40,7 +40,12 @@ function ModalEditUsers(props) {
       className="modal show"
       style={{ display: "block", position: "initial", color: "black" }}
     >
-      <Modal show={isShowModalEdit} onHide={handleClose}>
+      <Modal
+        show={isShowModalEdit}
+        onHide={handleClose}
+        backdrop="static"
+        keyboard={false}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Edit a user</Modal.Title>
         </Modal.Header>
