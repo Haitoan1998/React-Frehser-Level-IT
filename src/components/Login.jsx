@@ -1,13 +1,44 @@
 import React, { useState } from "react";
+import { toast } from "react-toastify";
+import { LoginUser } from "../services/UserService";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassWord] = useState("");
   const [isShowPassword, setIsShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const nav = useNavigate();
+
+  useEffect(() => {
+    let token = localStorage.getItem("token");
+    if (token) {
+      nav("/");
+    }
+  }, []);
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      toast.error("chưa nhập email,password");
+      return;
+    }
+    setLoading(true);
+    const res = await LoginUser(email, password);
+    if (res && res.token) {
+      toast.success("login success");
+      localStorage.setItem("token", res.token);
+      nav("/");
+    }
+    if (res.status === 400) {
+      toast.error("email or password incorrect");
+    }
+    setLoading(false);
+  };
   return (
     <div className="container-login col-lg-4 col-sm-10 col-md-10">
       <div className="title">Login</div>
-      <div className="text">Email or User</div>
+      <div className="text">Email or User (eve.holt@reqres.in)</div>
       <div>
         <input
           type="text"
@@ -41,8 +72,12 @@ export default function Login() {
       <button
         className={email && password ? "active" : ""}
         disabled={email && password ? false : true}
+        onClick={() => {
+          handleLogin();
+        }}
       >
-        Login
+        {loading ? <i class="fas fa-circle-notch fa-spin"></i> : null}
+        <span className="ms-2">Login</span>
       </button>
       <div className="back">
         <i class="fa-solid fa-angles-left"></i>Go Back

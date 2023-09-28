@@ -4,9 +4,18 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import logoApp from "../assets/vite.svg";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Header = () => {
+  const nav = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    nav("/login");
+    toast.success("logout successfully");
+  };
+
   return (
     <>
       <Navbar expand="lg" bg="dark" data-bs-theme="dark">
@@ -33,12 +42,17 @@ const Header = () => {
             </Nav>
             <Nav>
               <NavDropdown title="Setting" id="basic-nav-dropdown">
-                <NavLink to="/login" className="nav-link">
+                <NavLink to="/login" className="dropdown-item">
                   Login
                 </NavLink>
-                <NavLink to="/logout" className="nav-link">
+                <NavDropdown.Item
+                  className="dropdown-item"
+                  onClick={() => {
+                    handleLogout();
+                  }}
+                >
                   Logout
-                </NavLink>
+                </NavDropdown.Item>
               </NavDropdown>
             </Nav>
           </Navbar.Collapse>
