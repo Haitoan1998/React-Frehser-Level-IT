@@ -83,3 +83,65 @@ button:focus-visible {
     padding: 0 2px;
   }
 }
+.container-login {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  .title {
+    text-align: center;
+    font-size: 23px;
+    font-weight: 600;
+    padding-top: 30px;
+  }
+  .text {
+    font-weight: 600;
+    padding-top: 3px;
+  }
+  input {
+    padding: 8px 5px;
+    outline: none;
+    margin-bottom: 7px;
+    border: none;
+    border-radius: 3px;
+    width: 100%;
+    &:hover {
+      background-color: #dedede;
+    }
+  }
+  button {
+    padding: 10px;
+    border-radius: 3px;
+    outline: none;
+    border: none;
+    margin-top: 15px;
+    &.active {
+      background-color: #fe2c55;
+      color: white;
+    }
+  }
+  button[disable="disabled"],
+  button:disabled {
+    cursor: not-allowed;
+  }
+  .back {
+    text-align: center;
+    margin-top: 20px;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  .pass {
+    position: relative;
+    input {
+      position: relative;
+      z-index: 0;
+    }
+    i {
+      color: black;
+      position: absolute;
+      top: 26%;
+      left: 95%;
+      z-index: 1;
+      cursor: pointer;
+    }
+  }
+}
