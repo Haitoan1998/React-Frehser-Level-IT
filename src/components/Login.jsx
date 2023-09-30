@@ -3,6 +3,8 @@ import { toast } from "react-toastify";
 import { LoginUser } from "../services/UserService";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { useContext } from "react";
+import { UserContext } from "../context/UserContext";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -10,13 +12,7 @@ export default function Login() {
   const [isShowPassword, setIsShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const nav = useNavigate();
-
-  useEffect(() => {
-    let token = localStorage.getItem("token");
-    if (token) {
-      nav("/");
-    }
-  }, []);
+  const { loginContext } = useContext(UserContext);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -26,11 +22,11 @@ export default function Login() {
     setLoading(true);
     const res = await LoginUser(email, password);
     if (res && res.token) {
+      loginContext(email, res.token);
       toast.success("login success");
-      localStorage.setItem("token", res.token);
       nav("/");
     }
-    if (res.status === 400) {
+    if (res && res.status === 400) {
       toast.error("email or password incorrect");
     }
     setLoading(false);
@@ -79,7 +75,12 @@ export default function Login() {
         {loading ? <i class="fas fa-circle-notch fa-spin"></i> : null}
         <span className="ms-2">Login</span>
       </button>
-      <div className="back">
+      <div
+        className="back"
+        onClick={() => {
+          nav("/");
+        }}
+      >
         <i class="fa-solid fa-angles-left"></i>Go Back
       </div>
     </div>

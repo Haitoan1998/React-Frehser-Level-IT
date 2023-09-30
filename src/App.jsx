@@ -12,12 +12,18 @@ import Table from "react-bootstrap/Table";
 import { Routes, Route } from "react-router";
 import Home from "./components/Home";
 import Login from "./components/Login";
+import { useContext } from "react";
+import { UserContext } from "./context/UserContext";
+import { useEffect } from "react";
 
 function App() {
   const [isShowModalAddNew, setIsShowModalAddNew] = useState(false);
   const [isShowModalImport, setIsShowModalImport] = useState(false);
 
   const [dataExport, setDataExport] = useState([]);
+
+  const { user, loginContext } = useContext(UserContext);
+  console.log(user);
 
   const [data, setData] = useState([]);
 
@@ -26,6 +32,15 @@ function App() {
   };
 
   const HIHI = useRef();
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      loginContext(
+        localStorage.getItem("email"),
+        localStorage.getItem("token")
+      );
+    }
+  }, []);
 
   const getUsersExport = (event, done) => {
     let result = [];
@@ -199,7 +214,7 @@ function App() {
       </div>
       <ToastContainer
         position="top-right"
-        autoClose={5000}
+        autoClose={1000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
