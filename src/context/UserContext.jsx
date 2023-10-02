@@ -15,8 +15,8 @@ const UserProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("email");
+    // localStorage.removeItem("token");
+    // localStorage.removeItem("email");
     setUser((user) => {
       return { email: "", auth: false };
     });

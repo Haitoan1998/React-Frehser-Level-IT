@@ -1,35 +1,52 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { LoginUser } from "../services/UserService";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { useContext } from "react";
-import { UserContext } from "../context/UserContext";
+import { handleLoginRedux } from "../redux/actions/UserAction";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassWord] = useState("");
   const [isShowPassword, setIsShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
+
+  const loading = useSelector((state) => state.user.isLoading);
+  const account = useSelector((state) => state.user.account);
+
   const nav = useNavigate();
-  const { loginContext } = useContext(UserContext);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (account && account.auth === true) {
+      nav("/");
+    }
+  }, [account]);
 
   const handleLogin = async () => {
     if (!email || !password) {
       toast.error("chưa nhập email,password");
       return;
     }
-    setLoading(true);
-    const res = await LoginUser(email, password);
-    if (res && res.token) {
-      loginContext(email, res.token);
-      toast.success("login success");
-      nav("/");
+    // setLoading(true);
+
+    dispatch(handleLoginRedux(email, password));
+    // const res = await LoginUser(email.trim(), password.trim());
+    // if (res && res.token) {
+    //   loginContext(email, res.token);
+    //   toast.success("login success");
+    //   nav("/");
+    // }
+    // if (res && res.status === 400) {
+    //   toast.error("email or password incorrect");
+    // }
+
+    // setLoading(false);
+  };
+
+  const handlePressEnter = (event) => {
+    if (event && event.key === "Enter") {
+      handleLogin();
     }
-    if (res && res.status === 400) {
-      toast.error("email or password incorrect");
-    }
-    setLoading(false);
   };
   return (
     <div className="container-login col-lg-4 col-sm-10 col-md-10">
@@ -52,6 +69,9 @@ export default function Login() {
           value={password}
           onChange={(event) => {
             setPassWord(event.target.value);
+          }}
+          onKeyDown={(event) => {
+            handlePressEnter(event);
           }}
         />
         <i
